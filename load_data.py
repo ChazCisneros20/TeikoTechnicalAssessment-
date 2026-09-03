@@ -17,7 +17,7 @@ with sqlite3.connect('databaseSchema.db') as conn:
     );
     """
     curr.execute(query)
-    #=== Create `Sample` table. === 
+    #=== CREATE `Sample` table. ============================
     query = """
     CREATE TABLE IF NOT EXISTS Sample(
         sample_id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -28,7 +28,7 @@ with sqlite3.connect('databaseSchema.db') as conn:
     );
     """
     curr.execute(query)
-    #=== Create `Treatment` table. === 
+    #=== CREATE `Treatment` table. ==================
     query = """
     CREATE TABLE IF NOT EXISTS Treatment(
         treatment_id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -39,20 +39,32 @@ with sqlite3.connect('databaseSchema.db') as conn:
     
     );
     """
-    #Each `Subject` entity has 3 instances/rows of repeated data. let's take the repeated data as one row/instance. 
-    #Start from index 0, step of 3, to get the 1st out of 3 subject rows. 
+    #===INSERT INTO `Subject` Table =================
     df[['subject', 'condition', 'project', 'age', 'sex']][::3].to_sql('Subject', conn, index=False, if_exists='fail')
+
+
+    #===INSERT INTO `Treatment` Table ================
     
-    query = """
-    SELECT subject_id FROM Subject; 
-    """
-    curr.execute(query)
-    #the subject dict will be as 
+    # (subject : subject_id) EX: {sbj000 : 0}
+    curr.execute("""SELECT subject, subject_id FROM Subject;""")
+
+    #the subject dict will be as {sbj001 : 1}... 
     subject_dict = dict(curr.fetchall())
-    for subject_id in zip(curr.fetchall(), df['treatment', 'response'][::3]):
-        query = f"""
-                INSERT INTO Treatment(subject_id, treatment, response) VALUES({subject_id}, )
-                """
+
+    for row in df[::3].iterrows():
+                    #subject_dict['sbj000']
+        subject_id = subject_dict[row['subject']]
+
+        curr.execute(
+            f"""
+            INSERT INTO Treatment(subject_id, treatment, response) VALUES({subject_id}, {row['treatment']}, {row['response']});
+            """)
+
+    #=== INSERT INTO `Sample` Table ======================
+    for row in df.itterows():
+        print('Stopped')
+        
+    
         
         
 
