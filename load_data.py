@@ -14,10 +14,14 @@ with sqlite3.connect('databaseSchema.db') as conn:
         CREATE TABLE IF NOT EXISTS Subject(
             subject TEXT PRIMARY KEY, 
             condition TEXT NOT NULL,
-            age INTEGER NOT NULL CHECK age > 0,
+            age INTEGER NOT NULL,
             sex TEXT NOT NULL, 
             project TEXT NOT NULL 
         );
+        """
+    )
+    curr.execute(
+        """
         CREATE TABLE IF NOT EXISTS Treatment(
             treatment_id INTEGER PRIMARY KEY AUTOINCREMENT, 
             subject TEXT NOT NULL,
@@ -25,13 +29,21 @@ with sqlite3.connect('databaseSchema.db') as conn:
             response TEXT NULL,
             FOREIGN KEY (subject) REFERENCES Subject(subject)
         );
+        """
+    )
+    curr.execute(
+        """
         CREATE TABLE IF NOT EXISTS Sample(
             sample TEXT PRIMARY KEY, 
             subject TEXT NOT NULL, 
             sample_type TEXT NOT NULL, 
-            time_from_treatment_start TEXT NOT NULL CHECK time_from_treatment_start >= 0,
+            time_from_treatment_start TEXT NOT NULL,
             FOREIGN KEY (subject) REFERENCES Subject(subject)
         );
+        """
+    )
+    curr.execute(
+        """
         CREATE TABLE IF NOT EXISTS CellFrequency(
             sample TEXT NOT NULL, 
             population TEXT NOT NULL, 
@@ -42,8 +54,8 @@ with sqlite3.connect('databaseSchema.db') as conn:
             FOREIGN KEY (sample) REFERENCES Sample(sample)
         );
         """
-
     )
+    
     i=0
     for useless_index, row in df.iterrows():
         if i % 3 == 0:
@@ -64,7 +76,7 @@ with sqlite3.connect('databaseSchema.db') as conn:
                 """
             )
         curr.execute(
-            f""""
+            f"""
             INSERT INTO Sample(sample, subject, sample_type, time_from_treatment_start) VALUES
             (
                 "{row['sample']}", "{row['subject']}", "{row['sample_type']}", {row['time_from_treatment_start']}
@@ -83,8 +95,8 @@ with sqlite3.connect('databaseSchema.db') as conn:
                 f"""
                 INSERT INTO CellFrequency(sample, population, percentage, count, total_count) VALUES
                 (
-                    {row['sample']}, {populations[i]}, {row[populations[i]] / totalCount}, {row[populations[i]]}, {totalCount}
-                )
+                    "{row['sample']}", "{populations[i]}", {row[populations[i]] / totalCount}, {row[populations[i]]}, {totalCount}
+                );
                 """
             )
     
