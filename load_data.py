@@ -95,7 +95,7 @@ with sqlite3.connect('databaseSchema.db') as conn:
                 f"""
                 INSERT INTO CellFrequency(sample, population, percentage, count, total_count) VALUES
                 (
-                    "{row['sample']}", "{populations[i]}", {row[populations[i]] / totalCount}, {row[populations[i]]}, {totalCount}
+                    "{row['sample']}", "{populations[i]}", {(row[populations[i]] / totalCount) * 100}, {row[populations[i]]}, {totalCount}
                 );
                 """
             )
