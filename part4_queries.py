@@ -76,7 +76,8 @@ def main():
             WHERE cf.population = 'b_cell'
               AND Subject.condition = 'melanoma'
               AND Sample.time_from_treatment_start = 0
-              AND Treatment.response = 'yes';
+              AND Treatment.response = 'yes'
+              AND Subject.sex = "M";
             """
         )
 
